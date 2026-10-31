@@ -48,6 +48,10 @@
     var currentKey = null;
     for (var i = 1; i < group.length; i++) {
       var gap = daysBetween(group[i - 1].date, group[i].date);
+      if (gap === 0) {
+        current.push(group[i]);
+        continue;
+      }
       var iv = matchInterval(gap);
       if (iv && (currentKey === null || iv.key === currentKey)) {
         current.push(group[i]);

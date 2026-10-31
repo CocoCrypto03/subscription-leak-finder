@@ -130,5 +130,17 @@ console.log("== sample-statement.qif (QIF, ambiguous MM/DD dates) ==");
   check("ambiguous QIF date parsed as MM/DD (15th Jan, not 15th month)", !!netflix && netflix.firstDate.getUTCMonth() === 0, netflix && netflix.firstDate.toISOString());
 }
 
+console.log("== same-day recurring transactions ==");
+{
+  const sameDay = new Date("2026-01-01T12:00:00Z");
+  const r = app.SLF_DETECT.detectSubscriptions([
+    { date: sameDay, amount: -9.99, merchant: "Example Service", category: "software" },
+    { date: new Date(sameDay), amount: -9.99, merchant: "Example Service", category: "software" },
+    { date: new Date("2026-02-01T12:00:00Z"), amount: -9.99, merchant: "Example Service", category: "software" }
+  ]);
+  const service = subByMerchant(r, "Example Service");
+  check("same-day charge does not split the monthly chain", !!service && service.frequency === "monthly" && service.occurrences === 3);
+}
+
 console.log("\n" + passed + " passed, " + failed + " failed");
 process.exit(failed > 0 ? 1 : 0);
