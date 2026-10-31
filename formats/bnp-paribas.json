@@ -1,0 +1,14 @@
+{
+  "id": "bnp-paribas",
+  "label": "BNP Paribas (FR)",
+  "country": "FR",
+  "delimiter": ";",
+  "decimalSeparator": ",",
+  "dateFormat": "DD/MM/YYYY",
+  "headerAliases": {
+    "date": ["Date operation", "Date opération", "Date"],
+    "description": ["Libelle operation", "Libellé opération", "Libelle", "Libellé"],
+    "amount": ["Montant operation", "Montant opération", "Montant"]
+  },
+  "notes": "CSV export from the BNP Paribas online banking 'Mes comptes > Télécharger mes opérations' screen. Uses ';' as separator and ',' as decimal mark, like most French banks."
+}

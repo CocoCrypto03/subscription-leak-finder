@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run detection-logic tests against fictional sample statements
+        run: node tests/run-tests.mjs
+
+      - name: Validate JSON data files
+        run: |
+          for f in data/merchants.json formats/*.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || (echo "Invalid JSON: $f" && exit 1)
+          done

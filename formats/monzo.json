@@ -1,0 +1,14 @@
+{
+  "id": "monzo",
+  "label": "Monzo (UK)",
+  "country": "GB",
+  "delimiter": ",",
+  "decimalSeparator": ".",
+  "dateFormat": "DD/MM/YYYY",
+  "headerAliases": {
+    "date": ["Date"],
+    "description": ["Name", "Description"],
+    "amount": ["Amount"]
+  },
+  "notes": "Monzo's 'Export transactions' CSV. Also includes 'Money Out' / 'Money In' split columns in some exports; the parser prefers the single signed 'Amount' column when present."
+}

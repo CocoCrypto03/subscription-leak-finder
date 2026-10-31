@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Subscription Leak Finder — find the subscriptions you forgot</title>
+<meta name="description" content="Drop your bank statement. Find the subscriptions you forgot. Nothing leaves your browser." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="bg-decor" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark">🔎</span>
+      <span class="brand-name" data-i18n="app.title">Subscription Leak Finder</span>
+    </div>
+    <div class="header-actions">
+      <span class="privacy-badge" data-i18n="privacy.badge">100% local — after this page loads, 0 network requests happen</span>
+      <button id="langToggle" class="btn btn-ghost" type="button" data-i18n="lang.toggle">FR</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="intro" class="hero">
+      <h1 data-i18n="app.tagline">Drop your bank statement. Find the subscriptions you forgot. Nothing leaves your browser.</h1>
+
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-describedby="dropHint">
+        <div class="dropzone-icon" aria-hidden="true">📄</div>
+        <p class="dropzone-title" data-i18n="drop.title">Drop your bank statement here</p>
+        <p class="dropzone-sub" data-i18n="drop.sub">CSV, OFX or QIF. Exported from your bank. Nothing is uploaded, nothing is sent anywhere.</p>
+        <input type="file" id="fileInput" accept=".csv,.ofx,.qif,.txt" hidden />
+        <div class="dropzone-buttons">
+          <button id="chooseFileBtn" class="btn btn-primary" type="button" data-i18n="drop.button">Choose a file…</button>
+          <button id="sampleBtn" class="btn btn-secondary" type="button" data-i18n="drop.sample">Try with a sample statement</button>
+        </div>
+        <p class="dropzone-note"><span data-i18n="drop.sampleNote">(fictional demo data, clearly labeled)</span></p>
+      </div>
+
+      <p id="dropHint" class="formats-note" data-i18n="drop.formats">Recognized formats: BNP Paribas, Société Générale, Crédit Agricole, Boursorama, Revolut, N26, Monzo, Chase, or any generic CSV.</p>
+
+      <p id="errorBox" class="error-box" hidden></p>
+    </section>
+
+    <section id="results" class="results" hidden>
+      <div class="results-header">
+        <h2 data-i18n="results.heading">What we found</h2>
+        <button id="newFileBtn" class="btn btn-ghost" type="button" data-i18n="results.newFile">Analyze another statement</button>
+      </div>
+
+      <div id="sampleFlag" class="sample-flag" hidden></div>
+
+      <div class="totals-row">
+        <div class="total-card">
+          <span class="total-value" id="totalMonthly">0&nbsp;€</span>
+          <span class="total-label" data-i18n="results.monthly">per month</span>
+        </div>
+        <div class="total-card total-card-accent">
+          <span class="total-value" id="totalYearly">0&nbsp;€</span>
+          <span class="total-label" data-i18n="results.yearly">per year</span>
+        </div>
+        <div class="total-card">
+          <span class="total-value" id="totalCount">0</span>
+          <span class="total-label" data-i18n="results.count">recurring charge(s) found</span>
+        </div>
+      </div>
+
+      <div id="emptyState" class="empty-state" hidden data-i18n="results.empty">No recurring charges found.</div>
+
+      <div class="table-wrap">
+        <table id="resultsTable">
+          <thead>
+            <tr>
+              <th data-i18n="results.table.merchant">Merchant</th>
+              <th data-i18n="results.table.category">Category</th>
+              <th data-i18n="results.table.frequency">Frequency</th>
+              <th data-i18n="results.table.monthly">Monthly cost</th>
+              <th data-i18n="results.table.yearly">Yearly cost</th>
+              <th data-i18n="results.table.status">Flags</th>
+              <th data-i18n="results.table.cancel">Cancel</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+
+      <section id="cardSection" class="card-section">
+        <h2 data-i18n="card.heading">Share your recap</h2>
+        <canvas id="recapCanvas" width="1080" height="1350"></canvas>
+        <div class="card-controls">
+          <label class="checkbox-row">
+            <input type="checkbox" id="hideAmountsCheckbox" />
+            <span data-i18n="card.hideAmounts">Hide amounts (share safely)</span>
+          </label>
+          <button id="downloadCardBtn" class="btn btn-primary" type="button" data-i18n="card.download">Download image (PNG)</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <button id="privacyLink" class="link-btn" type="button" data-i18n="privacy.link">How is that verified?</button>
+    <span class="sep">·</span>
+    <a class="link-btn" href="https://github.com/CocoCrypto03/subscription-leak-finder" data-i18n="footer.source">Open source</a>
+  </footer>
+
+  <div id="privacyModal" class="modal" hidden>
+    <div class="modal-card">
+      <h2 data-i18n="privacy.heading">How your data stays private</h2>
+      <p data-i18n="privacy.body">This page makes no network request after it loads.</p>
+      <button id="closePrivacyModal" class="btn btn-primary" type="button">OK</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/parsers.js"></script>
+  <script src="js/merchants.js"></script>
+  <script src="js/detect.js"></script>
+  <script src="js/card.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "_comment": "List of bank format definitions the app tries to match against a CSV header row, in order. Add a new file in this folder + one line here = one PR. 'generic-csv.json' is always tried last as a fallback heuristic.",
+  "files": [
+    "bnp-paribas.json",
+    "societe-generale.json",
+    "credit-agricole.json",
+    "boursorama.json",
+    "revolut.json",
+    "n26.json",
+    "monzo.json",
+    "chase.json",
+    "generic-csv.json"
+  ]
+}

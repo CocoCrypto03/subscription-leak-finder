@@ -1,0 +1,448 @@
+/* Subscription Leak Finder — dark-first, mobile-first, no external fonts/assets. */
+
+:root {
+  --bg: #0b1120;
+  --bg-elevated: #121a2e;
+  --bg-card: #171f36;
+  --border: #263352;
+  --text: #eef2ff;
+  --text-dim: #9fb4d9;
+  --text-faint: #6b7fa3;
+  --accent: #7cf5c4;
+  --accent-strong: #3ddc97;
+  --warn: #ff8a65;
+  --danger: #ff6b6b;
+  --radius: 14px;
+  --max-width: 920px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100%;
+}
+
+body {
+  position: relative;
+  padding-bottom: 60px;
+  overflow-x: hidden;
+}
+
+.bg-decor {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(600px circle at 90% -10%, rgba(124, 245, 196, 0.1), transparent 60%),
+    radial-gradient(500px circle at -10% 90%, rgba(255, 138, 101, 0.08), transparent 60%);
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.brand-mark {
+  font-size: 1.4rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.privacy-badge {
+  font-size: 0.72rem;
+  color: var(--accent);
+  background: rgba(124, 245, 196, 0.1);
+  border: 1px solid rgba(124, 245, 196, 0.3);
+  border-radius: 999px;
+  padding: 6px 12px;
+  line-height: 1.3;
+}
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 10px 20px 40px;
+}
+
+.hero h1 {
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  line-height: 1.25;
+  text-align: center;
+  margin: 24px auto 32px;
+  max-width: 700px;
+}
+
+.dropzone {
+  background: var(--bg-elevated);
+  border: 2px dashed var(--border);
+  border-radius: 20px;
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dropzone:hover,
+.dropzone:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.dropzone.dragover {
+  border-color: var(--accent-strong);
+  background: rgba(124, 245, 196, 0.06);
+}
+
+.dropzone-icon {
+  font-size: 2.6rem;
+  margin-bottom: 8px;
+}
+
+.dropzone-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 4px 0;
+}
+
+.dropzone-sub {
+  color: var(--text-dim);
+  margin: 0 auto 20px;
+  max-width: 480px;
+  font-size: 0.95rem;
+}
+
+.dropzone-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dropzone-note {
+  color: var(--text-faint);
+  font-size: 0.8rem;
+  margin-top: 10px;
+}
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: transform 0.08s, background 0.15s, border-color 0.15s;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #06281c;
+}
+
+.btn-primary:hover {
+  background: var(--accent-strong);
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-dim);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 8px 14px;
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+}
+
+.formats-note {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 0.82rem;
+  max-width: 640px;
+  margin: 18px auto 0;
+}
+
+.error-box {
+  margin: 18px auto 0;
+  max-width: 500px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ffb4b4;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.sample-flag {
+  background: rgba(255, 138, 101, 0.12);
+  border: 1px solid rgba(255, 138, 101, 0.4);
+  color: var(--warn);
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.totals-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin: 16px 0 24px;
+}
+
+.total-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.total-card-accent {
+  border-color: rgba(124, 245, 196, 0.5);
+  background: linear-gradient(160deg, rgba(124, 245, 196, 0.12), var(--bg-card));
+}
+
+.total-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.total-label {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+.empty-state {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 720px;
+}
+
+thead th {
+  text-align: left;
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+  font-weight: 600;
+  padding: 12px 14px;
+  position: sticky;
+  top: 0;
+}
+
+tbody td {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.yearly-cell {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(159, 180, 217, 0.15);
+  color: var(--text-dim);
+  text-transform: capitalize;
+}
+
+.flags-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.flag {
+  font-size: 0.72rem;
+  padding: 4px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.flag-hike {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff9b9b;
+}
+
+.flag-trial {
+  background: rgba(124, 245, 196, 0.15);
+  color: var(--accent);
+}
+
+.flag-duplicate {
+  background: rgba(255, 138, 101, 0.15);
+  color: var(--warn);
+}
+
+.cancel-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cancel-link:hover {
+  text-decoration: underline;
+}
+
+.card-section {
+  margin-top: 40px;
+  text-align: center;
+}
+
+#recapCanvas {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  margin: 16px auto;
+  display: block;
+}
+
+.card-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.site-footer {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 0.8rem;
+  margin-top: 40px;
+}
+
+.link-btn {
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.link-btn:hover {
+  color: var(--text);
+}
+
+.sep {
+  margin: 0 8px;
+  color: var(--text-faint);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 16, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10;
+}
+
+/* The [hidden] attribute's UA default (display:none) must win over the
+   class rule above, which otherwise always wins because author CSS beats
+   the UA stylesheet regardless of selector order or specificity. */
+.modal[hidden] {
+  display: none;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  max-width: 460px;
+}
+
+.modal-card p {
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .dropzone {
+    padding: 28px 16px;
+  }
+
+  .total-value {
+    font-size: 1.4rem;
+  }
+}

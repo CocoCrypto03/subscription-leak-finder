@@ -1,0 +1,14 @@
+{
+  "id": "boursorama",
+  "label": "Boursorama Banque (FR)",
+  "country": "FR",
+  "delimiter": ";",
+  "decimalSeparator": ",",
+  "dateFormat": "DD/MM/YYYY",
+  "headerAliases": {
+    "date": ["dateOp", "dateVal", "Date operation", "Date"],
+    "description": ["label", "Libelle", "Libellé"],
+    "amount": ["amount", "Montant"]
+  },
+  "notes": "Boursorama's CSV export header uses English field names (dateOp, label, amount) even on the French interface."
+}

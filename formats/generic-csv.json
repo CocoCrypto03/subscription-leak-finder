@@ -1,0 +1,7 @@
+{
+  "id": "generic-csv",
+  "label": "Generic CSV (auto-detected columns)",
+  "country": "any",
+  "heuristic": true,
+  "notes": "Fallback used when no bank format above matches the header row. The app (see js/parsers.js, function detectGenericCsv) guesses: the delimiter (comma, semicolon or tab — whichever splits every row into the same column count), the decimal separator (comma if values look like '12,34' with no thousands grouping, dot otherwise), the date column (first column where most values parse as DD/MM/YYYY, MM/DD/YYYY or YYYY-MM-DD), the amount column (numeric column with the most non-zero values; two numeric columns are treated as separate debit/credit), and the description column (the longest text column that isn't the date or amount column)."
+}

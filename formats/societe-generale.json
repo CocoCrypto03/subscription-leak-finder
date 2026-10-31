@@ -1,0 +1,14 @@
+{
+  "id": "societe-generale",
+  "label": "Société Générale (FR)",
+  "country": "FR",
+  "delimiter": ";",
+  "decimalSeparator": ",",
+  "dateFormat": "DD/MM/YYYY",
+  "headerAliases": {
+    "date": ["Date de l'operation", "Date de l'opération", "Date"],
+    "description": ["Libelle", "Libellé", "Nature de l'operation"],
+    "amount": ["Montant de l'operation", "Montant de l'opération", "Montant"]
+  },
+  "notes": "CSV export from the Société Générale online banking 'Télécharger mes relevés' feature."
+}

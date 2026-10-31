@@ -1,0 +1,14 @@
+{
+  "id": "n26",
+  "label": "N26",
+  "country": "global",
+  "delimiter": ",",
+  "decimalSeparator": ".",
+  "dateFormat": "YYYY-MM-DD",
+  "headerAliases": {
+    "date": ["Value Date", "Date", "Booking Date"],
+    "description": ["Partner Name", "Payee"],
+    "amount": ["Amount (EUR)", "Amount"]
+  },
+  "notes": "N26's CSV export. Column names changed a few times across N26 app versions; add aliases here via PR if your export doesn't match."
+}

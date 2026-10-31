@@ -1,0 +1,14 @@
+{
+  "id": "chase",
+  "label": "Chase (US)",
+  "country": "US",
+  "delimiter": ",",
+  "decimalSeparator": ".",
+  "dateFormat": "MM/DD/YYYY",
+  "headerAliases": {
+    "date": ["Posting Date", "Transaction Date", "Date"],
+    "description": ["Description"],
+    "amount": ["Amount"]
+  },
+  "notes": "Chase's 'Download account activity' CSV export for checking/credit card accounts."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "credit-agricole",
+  "label": "Crédit Agricole (FR)",
+  "country": "FR",
+  "delimiter": ";",
+  "decimalSeparator": ",",
+  "dateFormat": "DD/MM/YYYY",
+  "headerAliases": {
+    "date": ["Date operation", "Date opération", "Date de comptabilisation"],
+    "description": ["Libelle", "Libellé", "Libelle operation"],
+    "debit": ["Debit", "Débit"],
+    "credit": ["Credit", "Crédit"]
+  },
+  "notes": "Crédit Agricole exports sometimes split amounts into separate 'Débit' and 'Crédit' columns instead of one signed 'Montant' column. The parser combines them into a single signed amount."
+}

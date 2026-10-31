@@ -1,0 +1,14 @@
+{
+  "id": "revolut",
+  "label": "Revolut",
+  "country": "global",
+  "delimiter": ",",
+  "decimalSeparator": ".",
+  "dateFormat": "YYYY-MM-DD",
+  "headerAliases": {
+    "date": ["Started Date", "Completed Date", "Date"],
+    "description": ["Description"],
+    "amount": ["Amount"]
+  },
+  "notes": "Revolut's 'Account statement' CSV export. Also has 'Type', 'Product', 'Fee', 'Currency', 'State', 'Balance' columns that are ignored by this app. Only rows with State=COMPLETED should be considered recurring-eligible; the parser currently includes all rows."
+}
