@@ -358,9 +358,8 @@
     $("newFileBtn").addEventListener("click", resetToIntro);
 
     $("langToggle").addEventListener("click", function () {
-      var next = window.SLF_I18N.getLang() === "fr" ? "en" : "fr";
-      window.SLF_I18N.setLang(next);
-      $("langToggle").textContent = next === "fr" ? "EN" : "FR";
+      window.SLF_I18N.setLang(window.SLF_I18N.getNextLang());
+      $("langToggle").textContent = window.SLF_I18N.getLang().toUpperCase();
       if (state.lastResult) renderResults(state.lastResult);
     });
 
@@ -384,7 +383,7 @@
 
   function init() {
     window.SLF_I18N.applyTranslations();
-    $("langToggle").textContent = window.SLF_I18N.getLang() === "fr" ? "EN" : "FR";
+    $("langToggle").textContent = window.SLF_I18N.getLang().toUpperCase();
     wireEvents();
     loadData();
   }

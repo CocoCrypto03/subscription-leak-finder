@@ -1,6 +1,12 @@
-// i18n.js — tiny FR/EN dictionary. No external library, no network call.
+// i18n.js — tiny dictionary. No external library, no network call.
 (function (global) {
   "use strict";
+
+  var LANGUAGES = {
+    en: "English",
+    fr: "Français",
+    "pt-BR": "Português (Brasil)",
+  }
 
   var STRINGS = {
     en: {
@@ -100,16 +106,67 @@
       "footer.privacy": "Confidentialité",
       "privacy.heading": "Comment tes données restent privées",
       "privacy.body": "Cette page est un site statique sans serveur. Une fois chargée (HTML, CSS, JS et les petits dictionnaires marchands/formats), elle ne fait plus aucune requête réseau. Le fichier que tu déposes est lu avec l'API File locale du navigateur et traité entièrement en mémoire sur ton appareil. Ouvre l'onglet Réseau de ton navigateur, dépose un relevé, et vérifie toi-même : rien de nouveau n'apparaît."
-    }
+    },
+    "pt-BR": {
+      "app.title": "Localizador de Assinaturas Esquecidas",
+      "app.tagline": "Envie seu extrato bancário. Encontre as assinaturas que você esqueceu. Nada sai do seu navegador.",
+      "privacy.badge": "100% local — após o carregamento desta página, nenhuma outra requisição de rede é realizada",
+      "privacy.link": "Como isso é verificado?",
+      "drop.title": "Solte seu extrato bancário aqui",
+      "drop.sub": "CSV, OFX ou QIF. Exportado diretamente do seu banco. Nada é carregado ou enviado para qualquer lugar.",
+      "drop.button": "Escolher um arquivo…",
+      "drop.sample": "Experimente com um extrato de exemplo",
+      "drop.sampleNote": "(dados fictícios para demonstração, claramente identificados)",
+      "drop.formats": "Formatos reconhecidos: BNP Paribas, Société Générale, Crédit Agricole, Boursorama, Revolut, N26, Monzo, Chase ou qualquer arquivo CSV genérico.",
+      "lang.toggle": "EN",
+      "results.heading": "O que encontramos",
+      "results.monthly": "por mês",
+      "results.yearly": "por ano",
+      "results.count": "cobrança(s) recorrente(s) encontrada(s)",
+      "results.table.merchant": "Estabelecimento",
+      "results.table.category": "Categoria",
+      "results.table.frequency": "Frequência",
+      "results.table.amount": "Valor",
+      "results.table.monthly": "Custo mensal",
+      "results.table.yearly": "Custo anual",
+      "results.table.status": "Alertas",
+      "results.table.cancel": "Cancelar",
+      "results.empty": "Nenhuma cobrança recorrente foi encontrada neste extrato. Ou você não possui assinaturas, ou o arquivo não contém histórico suficiente (precisamos de pelo menos 2 ou 3 cobranças semelhantes para identificar um padrão).",
+      "results.newFile": "Analisar outro extrato",
+      "freq.weekly": "Semanal",
+      "freq.monthly": "Mensal",
+      "freq.quarterly": "Trimestral",
+      "freq.annual": "Anual",
+      "status.priceHike": "O preço aumentou",
+      "status.trial": "Período de teste gratuito → pago",
+      "status.duplicate": "Possível cobrança duplicada",
+      "card.heading": "Compartilhe seu resumo",
+      "card.title": "Minhas Assinaturas em Resumo",
+      "card.hideAmounts": "Ocultar valores (compartilhe com segurança)",
+      "card.download": "Baixar imagem (PNG)",
+      "card.subscriptionCount": "assinaturas ativas",
+      "card.yearlyTotal": "por ano",
+      "card.topCategory": "Categoria com maior gasto",
+      "card.generatedBy": "Criado com Subscription Leak Finder — 100% local e de código aberto",
+      "card.hiddenPlaceholder": "•••",
+      "error.parse": "Não foi possível ler este arquivo. Verifique se ele é uma exportação bancária nos formatos CSV, OFX ou QIF.",
+      "error.empty": "Este arquivo não contém nenhuma transação que possa ser lida.",
+      "footer.source": "Código-fonte",
+      "footer.privacy": "Privacidade",
+      "privacy.heading": "Como seus dados permanecem privados",
+      "privacy.body": "Esta página é um site estático, sem servidor de backend. Após o carregamento (HTML, CSS, JavaScript e os pequenos dicionários de estabelecimentos e formatos), nenhuma outra requisição de rede é realizada. O arquivo que você seleciona é lido pela API File local do navegador e processado inteiramente na memória do seu dispositivo. Abra a aba Rede do seu navegador, selecione um extrato e confira por conta própria: nenhuma nova requisição aparecerá."
+    },
   };
 
   function detectLang() {
     try {
       var saved = localStorage.getItem("slf_lang");
-      if (saved === "en" || saved === "fr") return saved;
-    } catch (e) {}
+      if (LANGUAGES[saved]) return saved;
+    } catch (e) { }
     var nav = (navigator.language || "en").toLowerCase();
-    return nav.indexOf("fr") === 0 ? "fr" : "en";
+    return Object.keys(LANGUAGES).find(function (lang) {
+      return nav.startsWith(lang.toLowerCase());
+    }) || "en";
   }
 
   var currentLang = detectLang();
@@ -120,12 +177,19 @@
   }
 
   function setLang(lang) {
-    currentLang = lang === "fr" ? "fr" : "en";
+    currentLang = LANGUAGES[lang] ? lang : "en";
     try {
       localStorage.setItem("slf_lang", currentLang);
-    } catch (e) {}
+    } catch (e) { }
     document.documentElement.setAttribute("lang", currentLang);
     applyTranslations();
+  }
+
+  function getNextLang() {
+    var keys = Object.keys(LANGUAGES);
+    var currentIndex = keys.indexOf(currentLang);
+    var nextIndex = (currentIndex + 1) % keys.length;
+    return keys[nextIndex];
   }
 
   function getLang() {
@@ -142,5 +206,5 @@
     document.title = t("app.title") + " — " + t("app.tagline");
   }
 
-  global.SLF_I18N = { t: t, setLang: setLang, getLang: getLang, applyTranslations: applyTranslations };
+  global.SLF_I18N = { t: t, setLang: setLang, getLang: getLang, getNextLang: getNextLang, applyTranslations: applyTranslations };
 })(window);
