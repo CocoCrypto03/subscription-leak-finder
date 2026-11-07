@@ -128,7 +128,23 @@ console.log("== sample-statement.qif (QIF, ambiguous MM/DD dates) ==");
   const netflix = subByMerchant(r, "Netflix");
   check("Netflix recognized from QIF P field", !!netflix);
   check("ambiguous QIF date parsed as MM/DD (15th Jan, not 15th month)", !!netflix && netflix.firstDate.getUTCMonth() === 0, netflix && netflix.firstDate.toISOString());
+}console.log("== quarterly billing detection heuristics ==");
+{
+  const driftedQuarterly = [
+    { date: new Date(Date.UTC(2026, 0, 1)), amount: -45.00, description: "CLOUD BACKUP PRO", merchant: "Cloud Backup Pro", category: "cloud-storage", cancelUrl: null, known: true },
+    { date: new Date(Date.UTC(2026, 3, 11)), amount: -45.00, description: "CLOUD BACKUP PRO", merchant: "Cloud Backup Pro", category: "cloud-storage", cancelUrl: null, known: true }
+  ];
+  const r1 = app.SLF_DETECT.detectSubscriptions(driftedQuarterly);
+  check("quarterly charge with 100-day gap and matching amount detected", r1.subscriptions.length === 1 && r1.subscriptions[0].frequency === "quarterly", JSON.stringify(r1.subscriptions));
+
+  const uncorroboratedGap = [
+    { date: new Date(Date.UTC(2026, 0, 1)), amount: -37.42, description: "LOCAL HARDWARE", merchant: "Local Hardware", category: "uncategorized", cancelUrl: null, known: false },
+    { date: new Date(Date.UTC(2026, 3, 11)), amount: -61.18, description: "LOCAL HARDWARE", merchant: "Local Hardware", category: "uncategorized", cancelUrl: null, known: false }
+  ];
+  const r2 = app.SLF_DETECT.detectSubscriptions(uncorroboratedGap);
+  check("uncorroborated 100-day gap with varying odd amounts excluded", r2.subscriptions.length === 0, r2.subscriptions.length);
 }
+
 
 console.log("\n" + passed + " passed, " + failed + " failed");
 process.exit(failed > 0 ? 1 : 0);
