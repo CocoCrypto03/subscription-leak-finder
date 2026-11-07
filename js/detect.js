@@ -1,5 +1,5 @@
-// detect.js — the actual leak-finding logic: recurring charges, price hikes,
-// free-trial-to-paid, and category duplicates. Pure data in, data out — no
+// detect.js – the actual leak-finding logic: recurring charges, price hikes,
+// free-trial-to-paid, and category duplicates. Pure data in, data out – no
 // DOM, no network, easy to unit-test from the console.
 (function (global) {
   "use strict";
@@ -7,22 +7,49 @@
   var INTERVALS = [
     { key: "weekly", days: 7, tolerance: 2, perYear: 52 },
     { key: "monthly", days: 30.44, tolerance: 4, perYear: 12 },
-    { key: "quarterly", days: 91.3, tolerance: 7, perYear: 4 },
+    { key: "quarterly", days: 91.3, tolerance: 7, widerTolerance: 10, perYear: 4 },
     { key: "annual", days: 365.25, tolerance: 12, perYear: 1 }
   ];
 
   var MIN_OCCURRENCES = { weekly: 3, monthly: 3, quarterly: 2, annual: 2 };
 
-  var DUPLICATE_PRONE_CATEGORIES = ["video-streaming", "music-streaming", "cloud-storage", "fitness", "news-reading"];
+  var DUPLICATE_PRONE_CATEGORIES = [
+    "video-streaming",
+    "music-streaming",
+    "cloud-storage",
+    "fitness",
+    "news-reading"
+  ];
 
   function daysBetween(a, b) {
     return Math.round((b.getTime() - a.getTime()) / 86400000);
   }
 
-  function matchInterval(gapDays) {
+  function hasQuarterlyCorroboration(prevTx, nextTx) {
+    if (!prevTx || !nextTx) return false;
+    var prevAmt = Math.abs(prevTx.amount);
+    var nextAmt = Math.abs(nextTx.amount);
+    if (prevAmt <= 0 || nextAmt <= 0) return false;
+    var sameAmount = Math.abs(prevAmt - nextAmt) < 0.01;
+    var cents = Math.round((nextAmt % 1) * 100);
+    var subscriptionLikePrice =
+      cents === 0 || cents === 99 || cents === 95 || cents === 90 || cents === 50;
+    return sameAmount || (Boolean(prevTx.known) && subscriptionLikePrice);
+  }
+
+  function matchInterval(gapDays, prevTx, nextTx) {
     for (var i = 0; i < INTERVALS.length; i++) {
       var iv = INTERVALS[i];
-      if (Math.abs(gapDays - iv.days) <= iv.tolerance) return iv;
+      var diff = Math.abs(gapDays - iv.days);
+      if (diff <= iv.tolerance) return iv;
+      if (
+        iv.key === "quarterly" &&
+        iv.widerTolerance &&
+        diff <= iv.widerTolerance &&
+        hasQuarterlyCorroboration(prevTx, nextTx)
+      ) {
+        return iv;
+      }
     }
     return null;
   }
@@ -48,17 +75,25 @@
     var currentKey = null;
     for (var i = 1; i < group.length; i++) {
       var gap = daysBetween(group[i - 1].date, group[i].date);
-      var iv = matchInterval(gap);
+      var iv = matchInterval(gap, group[i - 1], group[i]);
       if (iv && (currentKey === null || iv.key === currentKey)) {
         current.push(group[i]);
         currentKey = iv.key;
       } else {
-        chains.push({ key: currentKey, txs: current, startsAtGroupHead: current[0] === group[0] });
+        chains.push({
+          key: currentKey,
+          txs: current,
+          startsAtGroupHead: current[0] === group[0]
+        });
         current = [group[i]];
         currentKey = null;
       }
     }
-    chains.push({ key: currentKey, txs: current, startsAtGroupHead: current[0] === group[0] });
+    chains.push({
+      key: currentKey,
+      txs: current,
+      startsAtGroupHead: current[0] === group[0]
+    });
     return chains.filter(function (c) {
       return c.key && c.txs.length >= (MIN_OCCURRENCES[c.key] || 2);
     });
@@ -95,7 +130,10 @@
     var second = Math.abs(chain.txs[1].amount);
     if (second <= 0) return null;
     if (first <= 1.0 || first < second * 0.5) {
-      return { trialAmount: first, trialDays: daysBetween(chain.txs[0].date, chain.txs[1].date) };
+      return {
+        trialAmount: first,
+        trialDays: daysBetween(chain.txs[0].date, chain.txs[1].date)
+      };
     }
     return null;
   }
@@ -106,7 +144,12 @@
     var expenses = transactions.filter(function (tx) {
       return tx.amount <= 0;
     });
-    if (expenses.length === 0) return { subscriptions: [], totals: { monthly: 0, yearly: 0 }, maxDate: null };
+    if (expenses.length === 0)
+      return {
+        subscriptions: [],
+        totals: { monthly: 0, yearly: 0 },
+        maxDate: null
+      };
 
     var maxDate = expenses.reduce(function (m, tx) {
       return tx.date > m ? tx.date : m;
