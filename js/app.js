@@ -373,6 +373,39 @@
       link.href = canvas.toDataURL("image/png");
       link.click();
     });
+  $("#downloadCsvBtn").addEventListener("click", function () {
+    if (!state.lastResult || !state.lastResult.subscriptions || !state.lastResult.subscriptions.length) {
+      return;
+    }
+    var headers = ["Merchant", "Category", "Frequency", "Monthly Cost", "Yearly Cost", "Flags"];
+    var rows = state.lastResult.subscriptions.map(function (s) {
+      var flags = [];
+      if (s.priceHikes && s.priceHikes.length) flags.push("Price increase");
+      if (s.trial) flags.push("Trial ending");
+      if (s.isDuplicate) flags.push("Possible duplicate");
+
+      return [
+        s.merchant || "",
+        s.category || "",
+        s.frequency || "",
+        s.monthlyEquivalent != null ? s.monthlyEquivalent.toFixed(2) : "",
+        s.yearlyEquivalent != null ? s.yearlyEquivalent.toFixed(2) : "",
+        flags.join("; ")
+      ].map(function (val) {
+        var str = String(val).replace(/"/g, '""');
+        return '"' + str + '"';
+      }).join(",");
+    });
+
+    var csvContent = [headers.join(",")].concat(rows).join("\r\n");
+    var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.download = "subscriptions.csv";
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+  });
 
     $("privacyLink").addEventListener("click", function () {
       $("privacyModal").hidden = false;
